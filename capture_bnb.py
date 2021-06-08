@@ -82,18 +82,26 @@ def save_bnb(frm,boxes, confidences, CONFIDENCE_THRESHOLD, NMS_THRESHOLD,classId
             if classIds[i] == 1 :
 
                 if Result.shape[0] > 100 :
-                    cv2.imwrite("capture/person/large/" + str(count_L) + ".jpg",Result)
-                    count_L += 1
-                    print("save large person")    
+                    try :
+                        cv2.imwrite("capture/person/large/" + str(count_L) + ".jpg",Result)
+                        count_L += 1
+                        print("save large person")   
+                    except : 
+                        print ("!_img.empty()")
                 else :
-                    cv2.imwrite("capture/person/small/" + str(count_S) + ".jpg",Result)
-                    count_S += 1
-                    print("save small person")    
-                    
+                    try :
+                        cv2.imwrite("capture/person/small/" + str(count_S) + ".jpg",Result)
+                        count_S += 1
+                        print("save small person")
+                    except : 
+                        print ("!_img.empty()")
             else :
-                cv2.imwrite("capture/crane" + str(count_Crane) + ".jpg",Result)
-                count_Crane += 1
-                print("save_crane")
+                try :
+                    cv2.imwrite("capture/crane/" + str(count_Crane) + ".jpg",Result)
+                    count_Crane += 1
+                    print("save_crane")
+                except :
+                    print ("!_img.empty()")
     return True
 
 def draw_bnb(frm,boxes, confidences, CONFIDENCE_THRESHOLD, NMS_THRESHOLD,classIds):
@@ -114,6 +122,7 @@ def draw_bnb(frm,boxes, confidences, CONFIDENCE_THRESHOLD, NMS_THRESHOLD,classId
     return frm
 
 if __name__ == '__main__' :
+    
     count_frm = 0
     boxes = []
     classIds = []
@@ -123,19 +132,23 @@ if __name__ == '__main__' :
     CONFIDENCE_THRESHOLD_ = []
     NMS_THRESHOLD_ = []
     classIds_ = []
+    
     while True :
         ret,frm = cap.read()
         if not ret :
             continue
-        if count_frm >= 120 :
+
+        if count_frm >= 50 :
             boxes, confidences, CONFIDENCE_THRESHOLD, NMS_THRESHOLD, classIds = detect(frm,net,layer)
             save_bnb(frm , boxes, confidences, CONFIDENCE_THRESHOLD, NMS_THRESHOLD, classIds)
+
             boxes_ = boxes
             confidences_ = confidences
             CONFIDENCE_THRESHOLD_ = CONFIDENCE_THRESHOLD
             NMS_THRESHOLD_ = NMS_THRESHOLD
             classIds_ = classIds
             count_frm = 0
+
         if len(boxes_) > 1:
             frm = draw_bnb(frm, boxes_, confidences_, CONFIDENCE_THRESHOLD_, NMS_THRESHOLD_, classIds_)
 
