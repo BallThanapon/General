@@ -4,12 +4,12 @@ import time
 import tkinter as tk
 from tkinter import filedialog
 
-# root = tk.Tk()
-# root.withdraw()
-# file_path = filedialog.askopenfilename(title='Select Video')
-# print(file_path)
+root = tk.Tk()
+root.withdraw()
+file_path = filedialog.askopenfilename(title='Select Video')
+print(file_path)
 
-file_path = 'SynxIPcam_urn-uuid-643C9869-12C593A8-001D-0000-000066334873_2020-11-01_05-53-00(1).mp4'
+# file_path = 'SynxIPcam_urn-uuid-643C9869-12C593A8-001D-0000-000066334873_2020-11-01_05-53-00(1).mp4'
 cap = cv2.VideoCapture(file_path)
 CONFIDENCE_THRESHOLD = 0.1
 NMS_THRESHOLD = 0.1
