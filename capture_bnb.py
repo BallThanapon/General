@@ -4,16 +4,17 @@ import time
 import tkinter as tk
 from tkinter import filedialog
 
-root = tk.Tk()
-root.withdraw()
-file_path = filedialog.askopenfilename(title='Select Video')
-print(file_path)
+# root = tk.Tk()
+# root.withdraw()
+# file_path = filedialog.askopenfilename(title='Select Video')
+# print(file_path)
 
+file_path = 'SynxIPcam_urn-uuid-643C9869-12C593A8-001D-0000-000066334873_2020-11-01_05-53-00(1).mp4'
 cap = cv2.VideoCapture(file_path)
 CONFIDENCE_THRESHOLD = 0.1
 NMS_THRESHOLD = 0.1
-weights = "yolov4-newdataset2.weights"
-cfg = "yolov4-newdataset2.cfg"
+weights = "../Hawk_eye/hwakeye/HAWKEYE_CRANE_DETECTION/yolov4-newdataset2.weights"
+cfg = "../Hawk_eye/hwakeye/HAWKEYE_CRANE_DETECTION/yolov4-newdataset2.cfg"
 
 #class_names = ["crane","crane_boom","crane_outrigger","person"]
 class_names = ["crane","person"]
@@ -68,10 +69,11 @@ def detect(frm, net, ln):
 count_L = 0
 count_S = 0
 count_Crane = 0
+
 def save_bnb(frm,boxes, confidences, CONFIDENCE_THRESHOLD, NMS_THRESHOLD,classIds):
     global count_S,count_Crane,count_L
     idxs = cv2.dnn.NMSBoxes(boxes, confidences, CONFIDENCE_THRESHOLD, NMS_THRESHOLD)
-
+    print("======",idxs)
     if len(idxs.flatten()) > 0 :
         for i in idxs.flatten():
             (x, y) = (boxes[i][0], boxes[i][1])
@@ -121,8 +123,9 @@ def draw_bnb(frm,boxes, confidences, CONFIDENCE_THRESHOLD, NMS_THRESHOLD,classId
 
     return frm
 
+
 if __name__ == '__main__' :
-    
+
     count_frm = 0
     boxes = []
     classIds = []
@@ -132,7 +135,6 @@ if __name__ == '__main__' :
     CONFIDENCE_THRESHOLD_ = []
     NMS_THRESHOLD_ = []
     classIds_ = []
-    
     while True :
         ret,frm = cap.read()
         if not ret :
@@ -140,8 +142,8 @@ if __name__ == '__main__' :
 
         if count_frm >= 50 :
             boxes, confidences, CONFIDENCE_THRESHOLD, NMS_THRESHOLD, classIds = detect(frm,net,layer)
-            save_bnb(frm , boxes, confidences, CONFIDENCE_THRESHOLD, NMS_THRESHOLD, classIds)
-
+            if len(boxes) > 0 :
+                save_bnb(frm , boxes, confidences, CONFIDENCE_THRESHOLD, NMS_THRESHOLD, classIds)
             boxes_ = boxes
             confidences_ = confidences
             CONFIDENCE_THRESHOLD_ = CONFIDENCE_THRESHOLD
@@ -149,7 +151,7 @@ if __name__ == '__main__' :
             classIds_ = classIds
             count_frm = 0
 
-        if len(boxes_) > 1:
+        if len(boxes_) > 0:
             frm = draw_bnb(frm, boxes_, confidences_, CONFIDENCE_THRESHOLD_, NMS_THRESHOLD_, classIds_)
 
         if frm.shape[0] > 0 :
